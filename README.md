@@ -1,6 +1,6 @@
 # RMD-for-AppStats-chapters
 
-Individual RMD files for each chapter in Applied Statistics - reflects the version published on github on 30 October 2021.
+Individual RMD files for each chapter in Applied Statistics - reflects the version published on github on 3 August 2022.
 
 With one exception, this collection of RMD files plus the  data folder, image folder and bibligraphy permits anyone to edit and knit individual chapters from my Applied Statistics notes.
 
