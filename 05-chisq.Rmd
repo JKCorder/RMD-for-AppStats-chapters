@@ -1,26 +1,3 @@
----
-title: "<span style='color:darkblue;font-weight:bold;font-size: 50px'>APPLIED STATISTICS<br>FOR POLITICAL SCIENCE<br>Chapter 5</style>"
-output:
-  bookdown::html_document2:
-    number_sections: false
-    toc: true
-bibliography: bibliography.bib
----
-<!-- This documents includes the header and setup information so that the chapter can converted to a single html document.  The references will appear in each chapter, rather than collected in a separate chapter -->
-
-```{r setup, echo=FALSE, comment=FALSE, message=FALSE}
-library(haven)
-library(tidyverse)
-library(car)
-library(questionr)
-library(knitr)
-library(matrixStats)
-
-windowsFonts(A = windowsFont("Garamond"))
-theme_set(theme_classic(base_size = 12,  base_family="A"))
-```
-<!-- Everything below this line is identical to the bookdown files on github -->
-
 # Measures of association: Chi-square
 
 The Chi-square test statistic is appropriate when the relationship between two variables can be summarized with a simple table.  You can use the table to determine the direction of the relationship and whether the effect on Y is large or small and you can use a measure of association - the chi-square - to make an inference about the population from the sample data.
@@ -34,7 +11,7 @@ The ANES includes a survey question that asks respondents to report their ideolo
 
 ```{r anes, echo=FALSE}
 # Read the data
-anes2020 <- read_dta("data/anes_timeseries_2020_stata_20210719.dta")
+anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
 
 # Variables needed for this chapter:
 # Ideology

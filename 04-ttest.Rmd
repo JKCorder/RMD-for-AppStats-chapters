@@ -1,27 +1,19 @@
----
-title: "<span style='color:darkblue;font-weight:bold;font-size: 50px'>APPLIED STATISTICS<br>FOR POLITICAL SCIENCE<br>Chapter 4</style>"
-output:
-  bookdown::html_document2:
-    number_sections: false
-    toc: true
-bibliography: bibliography.bib
----
-<!-- This documents includes the header and setup information so that the chapter can converted to a single html document.  The references will appear in each chapter, rather than collected in a separate chapter -->
 
-```{r setup, echo=FALSE, comment=FALSE, message=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
 library(haven)
-library(tidyverse)
-library(car)
-library(questionr)
 library(knitr)
+library(tidyverse)
+library(questionr)
 library(matrixStats)
 
 windowsFonts(A = windowsFont("Garamond"))
 theme_set(theme_classic(base_size = 12,  base_family="A"))
 ```
-<!-- Everything below this line is identical to the bookdown files on github -->
 
 # Measures of association: t-test
+
+Add this info - Gossett's data from Kalamazoo....https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2008.00279.x
 
 ## What is the t-test?
 
@@ -110,7 +102,7 @@ If you have in front of you data from a single random sample – you can use sof
 
 ```{r anes, echo=FALSE}
 # Read the data
-anes2020 <- read_dta("data/anes_timeseries_2020_stata_20210719.dta")
+anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
 
 # Variables needed for this chapter:
 # Weight

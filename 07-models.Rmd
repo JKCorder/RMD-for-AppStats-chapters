@@ -1,26 +1,3 @@
----
-title: "<span style='color:darkblue;font-weight:bold;font-size: 50px'>APPLIED STATISTICS<br>FOR POLITICAL SCIENCE<br>Chapter 7</style>"
-output:
-  bookdown::html_document2:
-    number_sections: false
-    toc: true
-bibliography: bibliography.bib
----
-<!-- This documents includes the header and setup information so that the chapter can converted to a single html document.  The references will appear in each chapter, rather than collected in a separate chapter -->
-
-```{r setup, echo=FALSE, comment=FALSE, message=FALSE}
-library(haven)
-library(tidyverse)
-library(car)
-library(questionr)
-library(knitr)
-library(matrixStats)
-
-windowsFonts(A = windowsFont("Garamond"))
-theme_set(theme_classic(base_size = 12,  base_family="A"))
-```
-<!-- Everything below this line is identical to the bookdown files on github -->
-
 # Statistical models with many predictors
 
 This chapter introduces the statistical model that is most commonly used in the social sciences and the building block for more complex models that have emerged to confront specific research challenges.
@@ -49,11 +26,11 @@ In earlier chapters, we described three ways that we could use tables and figure
 
 ### Red state, Blue state:  cross tabulation with a control variable 
 
-Observers of American politics claim that the South is politically distinctive (100 % “Red State”).  We associate Red states with what? Republican voting, support for the military, guns, Christian values, maybe even NASCAR and country music.  We associate Blue states with Democratic voting, urban living, Volvos, latte and book clubs.  While the stereotypes are fun, are Red states really that different?  The 2004 election should be very good test of this question – George Bush – from Texas – was running for re-election against John Kerry, a northerner, a liberal, and career politician and diplomat.  Kerry was portrayed as elitist, affected and out-of-touch.  So what happened to Kerry in the South?   Was the proportion of the electorate supporting Bush in 2004 really that different between Southern and other states?  The South is all red, the rest of the country a mixture of red and blue – so did the South deliver votes for Bush?  Table 2 reports each candidate's  percentage of the two-party vote [@anes2004].  
+Observers of American politics claim that the South is politically distinctive (100 % “Red State”).  We associate Red states with what? Republican voting, support for the military, guns, Christian values, maybe even NASCAR and country music.  We associate Blue states with Democratic voting, urban living, Volvos, latte and book clubs.  While the stereotypes are fun, are Red states really that different?  The 2004 election should be very good test of this question – George Bush – from Texas – was running for re-election against John Kerry, a northerner, a liberal, and career politician and diplomat.  Kerry was portrayed as elitist, affected and out-of-touch.  So what happened to Kerry in the South?   Was the proportion of the electorate supporting Bush in 2004 really that different between Southern and other states?  The South is all red, the rest of the country a mixture of red and blue – so did the South deliver votes for Bush?  Table 2 reports each candidate's  percentage of the two-party vote [anes2004].  
 
 #### Table 1. Support for George Bush, percentage of the two-party vote, by region, 2004.
 ```{r readthedata, echo=FALSE}
-load("data/04245-0001-Data.rda")
+load("04245-0001-Data.rda")
 
 anes<-da04245.0001
 
@@ -99,7 +76,7 @@ We know that wealthy respondents are more likely to turnout in elections.  This 
 #### Figure 1.  Household income and self-reported turnout, 2020 ANES.
 ```{r figure 1, echo=FALSE}
 # Read the data
-anes2020 <- read_dta("data/anes_timeseries_2020_stata_20210719.dta")
+anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
 
 # recode and identify missing values for turnout, vote, and education
 # use the quantile function to identify lower and upper thirds 
