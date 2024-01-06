@@ -1,0 +1,10 @@
+bookdown::bs4_book:
+  css: bs4_style.css
+  theme:
+      primary: "#3182bd"
+    #primary: "#095872"
+ # The comment below takes out the edit and view source code buttons  
+ # Put back in after folder is available
+ 
+  repo: https://github.com/JKCorder/RMD-for-AppStats-chapters
+  

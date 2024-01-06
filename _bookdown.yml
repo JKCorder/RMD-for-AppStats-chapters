@@ -1,0 +1,11 @@
+book_filename: "AppStat"
+new_session: true
+before_chapter_script: _common.R
+delete_merged_file: true
+# This doesn't work...
+# This suppresses the figure captions
+language:
+  label:
+    fig: !expr function(x) sprintf(" ", x)
+    tab: !expr function(x) sprintf(" ", x)
+output_dir: "docs" 

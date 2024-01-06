@@ -26,9 +26,9 @@ In earlier chapters, we described three ways that we could use tables and figure
 
 ### Red state, Blue state:  cross tabulation with a control variable 
 
-Observers of American politics claim that the South is politically distinctive (100 % “Red State”).  We associate Red states with what? Republican voting, support for the military, guns, Christian values, maybe even NASCAR and country music.  We associate Blue states with Democratic voting, urban living, Volvos, latte and book clubs.  While the stereotypes are fun, are Red states really that different?  The 2004 election should be very good test of this question – George Bush – from Texas – was running for re-election against John Kerry, a northerner, a liberal, and career politician and diplomat.  Kerry was portrayed as elitist, affected and out-of-touch.  So what happened to Kerry in the South?   Was the proportion of the electorate supporting Bush in 2004 really that different between Southern and other states?  The South is all red, the rest of the country a mixture of red and blue – so did the South deliver votes for Bush?  Table 2 reports each candidate's  percentage of the two-party vote [anes2004].  
+Observers of American politics claim that the South is politically distinctive (100 % “Red State”).  We associate Red states with what? Republican voting, support for the military, guns, Christian values, maybe even NASCAR and country music.  We associate Blue states with Democratic voting, urban living, Volvos, latte and book clubs.  While the stereotypes are fun, are Red states really that different?  The 2004 election should be very good test of this question – George Bush – from Texas – was running for re-election against John Kerry, a northerner, a liberal, and career politician and diplomat.  Kerry was portrayed as elitist, affected and out-of-touch.  So what happened to Kerry in the South?   Was the proportion of the electorate supporting Bush in 2004 really that different between Southern and other states?  The South is all red, the rest of the country a mixture of red and blue – so did the South deliver votes for Bush?  Table 2 reports each candidate's  percentage of the two-party vote [@anes2004].  
 
-#### Table 1. Support for George Bush, percentage of the two-party vote, by region, 2004.
+
 ```{r readthedata, echo=FALSE}
 load("04245-0001-Data.rda")
 
@@ -44,10 +44,10 @@ anes$south<-factor(anes$south, levels=c(0,1), labels=c("Outside of the South", "
 anes$race<-factor(anes$race, levels=c(0,1), labels=c("White, Non-Hispanic", "Any other racial or identification"))
 ```
 
-```{r table1, echo=FALSE}
+#### **Table 7.1 Support for George Bush, percentage of the two-party vote, by region, 2004**{-}
+```{r table71, echo=FALSE}
 #FYI
 #t.test(anes$vote[anes$south=="Outside of the South"],anes$vote[anes$south=="South"])
-
 table1<- anes %>% filter(!is.na(vote), !is.na(race)) %>% group_by(south) %>% summarise(test=100*wtd.mean(vote, weight=weight))
 kable(table1, digit=2, col.names=c("Region", "Percentage"))
 ```
@@ -58,9 +58,8 @@ Perhaps we should consider other factors that could be distorting the relationsh
 
 In any case, this question requires a controlled comparison – we know that the South is more diverse, we know or think that a diverse electorate is going to be more Democratic – so we need to control for race in order to clarify the link between region and vote.  Table 2 reports the controlled comparison – summarizing the link between region and vote for White respondents compared to respondents with any other ethnic or racial identity. 
 
-#### Table 2.  Bush and Kerry vote in the South and outside of the South, by race, ANES 2004.
-
-```{r table2, echo=FALSE, comment="", warning=FALSE, error=FALSE}
+#### **Table 7.2 Bush and Kerry vote in the South and outside of the South, by race, ANES 2004** {-}
+```{r table72, echo=FALSE, comment="", warning=FALSE, error=FALSE}
 table2<- anes %>% filter(!is.na(vote), !is.na(race)) %>% group_by(race, south) %>% summarise(Percentage=100*wtd.mean(vote, weight=weight), .groups = 'drop')
 kable(table2, digit=2, col.names=c("Region", "Race", "Percentage"))
 #prop.table(wtd.table(anes$race[anes$south=="Outside of the South"], weight=anes$weight[anes$south=="Outside of the South"))
@@ -73,8 +72,8 @@ The regional differences are clearly much larger if we control for race.  White 
 
 We know that wealthy respondents are more likely to turnout in elections.  This could be the case since higher income families are more likely to have access to transportation, a job that permits time off, and may perceive more at stake in an election.  But we also know that highly educated people are more likely to turn out to vote – perhaps for reasons unrelated to income – highly educated people have more information, so the costs of voting (acquiring information, making choices) are lower – and, again, perhaps perceive the stakes as higher (more incentive to vote).  But education and income are intertwined – maybe the effect of income is just due to high income people having more education?  We should test whether the link between income and turnout is spurious.  Figure 1 summarizes self-reported turnout for people in the lower, middle, and upper 1/3 of the income distribution.  The turnout numbers seem high for a couple of reasons – the ANES has a potential response bias that is a consequence of people who are interested in politics being more likely to participate in the survey and, on top of that, people know they are supposed to vote, so they may self-report a vote when they did not vote.  In any case, the results are fairly clear – higher income is associated with higher self-reported voting.
 
-#### Figure 1.  Household income and self-reported turnout, 2020 ANES.
-```{r figure 1, echo=FALSE}
+#### **Figure 7.1.  Household income and self-reported turnout, 2020 ANES** {-}
+```{r figure71, echo=FALSE}
 # Read the data
 anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
 
@@ -112,9 +111,9 @@ ggplot(anes2020_table1, aes(x=income3, y=Percentage)) +
 
 Figure 2 breaks out the link between income and turnout across 3 levels of education – a controlled comparison.  Now we can understand the link between turnout and income for people with the same (or at least similar) levels of education).
 
-#### Figure 2.  Household and inomce and self-reported turnout, controlling for education, 2020 ANES.
+#### **Figure 7.2. Household and income and self-reported turnout, controlling for education, 2020 ANES**{-}
 
-```{r figure2, echo=FALSE}
+```{r figure72, echo=FALSE}
 anes2020_table2 <- anes2020 %>% filter(!is.na(weight), !is.na(income3), !is.na(turnout), !is.na(education3)) %>% group_by(income3, education3) %>%
   summarise(Percentage=100*weighted.mean(turnout, weight), .groups = 'drop' )
 
@@ -231,7 +230,7 @@ The single variable models predicting the Donald Trump feeling thermometer are r
 
 The second column reports the same numbers for the link between the ideology and the thermometer.  The coefficient indicates the effect of ideology is even more powerful, with feelings declining about 100 points - the full range of the thermometer - as we compare extreme liberals (ideology = 1) to extreme conservatives (ideology=7).  
 
-#### Table 3.  Two bivariate models predicting the Donald Trump feeling thermometer, using party and ideology.
+#### **Table 7.3. Two bivariate models predicting the Donald Trump feeling thermometer, using party and ideology** {-}
 
 <br>
 
@@ -267,7 +266,7 @@ Notice that the coefficient on party identification is lower than the coefficien
 
 Moreover, how can we be sure if either of these models are accurate?  We know that party id and ideology are correlated  - conservatives are likely to be Republican – so we know that full effects (the slopes above) and partial effects (in a multivariate model) will be different. By introducing both predictors in one model we can disentangle the effects of ideology and party id.  This permits us to clarify, for instance, if an extremely liberal Strong Democrat would feel differently about Hillary Clinton than a middle of the road Strong Democrat. Or if a conservative Strong Republican would feel differently than a conservative Independent.  The coefficients from a multivariate model with both party id and ideology appears below as Table 4.  The first column reports the unstandardized coefficients and standardized coefficients are reported at the bottom of the table.
 
-#### Table 4.  A multvariate model predicing the Donald Trump feeling thermometer, using party and ideology in one model.
+#### **Table 7.4. A multvariate model predicing the Donald Trump feeling thermometer, using party and ideology in one model.** {-}
 
 <br>
 
@@ -291,19 +290,17 @@ So while this is an example of additive effects – both variables remain signif
 
 We could use a similar strategy to evaluate a range of variables.  The table below reports the coefficients from a complex model – party id, ideology, race, gender, age, education and income.
 
-#### Table 5.  A multvariate model predicing the Donald Trump feeling thermometer, testing several potential predictors.
+#### **Table 7.5. A multvariate model predicing the Donald Trump feeling thermometer, testing several potential predictors.** {-}
 ```{r table5, echo=FALSE, warnings=FALSE, message=FALSE, results='asis'}
 model5<-lm(ft_Trump~partyid+ideology+education+income+female+race, weight=weight, data=anes2020)
 stargazer (model5, style="qje", type="html" , dep.var.labels = c("Feeling Thermometer, Donald Trump"),   covariate.labels = c("Party identification", "Ideology", "Education", "Income", "Female", "Minority", "Constant"),  omit.table.layout = "n", digits=3, report=('vc*p'), omit.stat=c("ser","f")) 
-
-# Verify these....and figure out why adjusted r-squared is flawed.
 
 beta1<- model5$coefficients[2] * sd(model5$model[,2]) / sd(model5$model[,1])
 beta2<- model5$coefficients[3] * sd(model5$model[,3]) / sd(model5$model[,1])
 beta3<- model5$coefficients[4] * sd(model5$model[,4]) / sd(model5$model[,1])
 beta4<- model5$coefficients[5] * sd(model5$model[,5]) / sd(model5$model[,1])
 beta5<- model5$coefficients[6] * sd(model5$model[,6]) / sd(model5$model[,1])
-beta6<- model5$coefficients[6] * sd(model5$model[,7]) / sd(model5$model[,1])
+beta6<- model5$coefficients[7] * sd(model5$model[,7]) / sd(model5$model[,1])
 ``` 
 <br>
 
@@ -318,7 +315,7 @@ beta6<- model5$coefficients[6] * sd(model5$model[,7]) / sd(model5$model[,1])
 
 This type of table has a lot of information, but we can focus on a few numbers.  First, which variables can we ignore as not statistically significant?  You can see that the coefficient on income is not statistically significant - after controlling for other factors, income doesn't matter.
 
-To figure out which of the significant variables are the best predictors, we can use the standadrized coefficients.  The largest (in absolute value) is party identification, followed by ideology, then education, and, weakest, race and gender.  
+To figure out which of the significant variables are the best predictors, we can use the standardized coefficients.  The largest (in absolute value) is party identification, followed by ideology, then education, and, weakest, race and gender.  
 
 So we could conclude that highly educated, liberal, Strong Democrats will dislike Donald Trump, while poorly educated, conservative Strong Republicans will like Donald Trump the most.  Gender and race matter, but the effects are small - White respondents about 4 pts higher than others, and women about 2 pts higher than men. Notice the r-squared – nearly 64 percent of the variation in this attitude is explained by five variables. Review the table to be sure you understand how these conclusions follow from the numbers.
 
