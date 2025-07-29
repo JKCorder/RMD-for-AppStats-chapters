@@ -4,7 +4,10 @@ This books was produced with the R package bookdown.  The site and the underlyin
 
 Work to be completed includes
 
+Change image location for book cover to images subdirectory and move cover to that directory
+
 All chapters
+
 Make all figures 100% width to avoid sliders
 Check auto-numbering for all figures and tables (not consistent across chapters)
 
