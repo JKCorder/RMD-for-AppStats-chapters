@@ -1,5 +1,3 @@
-<!-- Add fig.topcaption=TRUE, out.width = '100%' -->
-
 # Descriptive statistics
 
 Before we learn about statistical tests or statistical models, we will cover some basic measures that are used to describe data. The basic measures fall into two categories – measures of central tendency and measures of dispersion. What is the typical value for some variable? How are the observations spread out or dispersed around that value? This chapter also introduces you to party identification, at least how it is measured. The final part of the chapter focuses on interpreting and explaining statistical output that describes the distribution of party identification in the electorate today.  For a background on the meaning and importance of party identification, take a look at "Americans Hate to Love Their Party, but They Do!" [@ucw2].
@@ -34,8 +32,8 @@ A third measure of central tendency is the mode. The mode is simply the single m
 
 In the special case of a normal distribution or bell-shaped curve, the mean, median and mode are the same number. Figure \@ref(fig:figure21) reproduces a normal distribution. The responses are symmetrical, as many above as below the average and with the most responses right at the average. This distribution obviously doesn’t fit all of the variables we observe, so it also makes sense to think about which measure of central tendency might be useful for data that have other distributions.
 
-**Figure \@ref(fig:figure21)** The normal distribution
-```{r figure21, comment="", fig.cap="\\label{fig:figure21}", message=FALSE, warning=FALSE, echo=FALSE,out.width = '95%', fig.align = 'center'}
+**Figure \@ref(fig:figure21)  The normal distribution**
+```{r figure21, comment="", fig.cap="\\label{fig:figure21}", message=FALSE, warning=FALSE, echo=FALSE,out.width = '95%', fig.align = 'center', fig.topcaption=TRUE, out.width = '100%'}
  N<- 10000
  x <- rnorm(N, 0)
  hist(x, 
@@ -48,7 +46,7 @@ lines(density(x,bw=1), col='red', lwd=3)
 
 Figure \@ref(fig:figure22), below, reproduces a skewed distribution – skewed toward the small number of very high values on the right. In this case, the mean would be higher than the mode or the median – higher since there are a few very large values that inflate the mean. If you wanted to report a typical value, the median would be a more accurate number 
 
-**Figure \@ref(fig:figure22)** A skewed distribution
+**Figure \@ref(fig:figure22). A skewed distribution**
 ```{r figure22, comment="", fig.cap="\\label{fig:figure22}", message=FALSE, warning=FALSE, echo=FALSE,out.width = '95%', fig.align = 'center'}
 N <- 10000
  x <- rchisq(N, 5)
@@ -95,7 +93,7 @@ There are many different kinds of variables – a survey might capture and recor
 
 Some variables have a meaningful order but are just a series of categories that indicate higher or lower. Education levels are a good example:  there is an order and higher values indicate more education. The specific way that we order education in the ANES is reproduced below.
 
-**Table \@ref(tab:table21)** Education categories in the ANES
+**Table \@ref(tab:table21)  Education categories in the ANES**
 
 ```{r table21, echo=FALSE}
 table21<-data.frame(
@@ -104,7 +102,7 @@ table21<-data.frame(
  Number=c(-9,-8,1,2,3,4,5,6,7,8,95)
 )
 kable(table21, 
-      caption="Source: @anes2020",
+      caption="Source: 2024 American National Election Study",
       align = "lc")
 ```
 
@@ -118,7 +116,7 @@ Descriptive statistics are most useful for interval variables like age. Descript
 
 ## A starting point: party identification
 
-All of the papers and problem sets you prepare for this class are based on data collected in the American National Election Study (ANES), a survey of approximately 5,000 vote-eligible citizens collected and distributed each election year by the Inter-university Consortium for Political and Social Research (ICPSR) in Ann Arbor. The survey data inform work in American politics on mobilization and turnout, campaign effects, and provide insights into how party identification changes over time. The data collection effort is funded by the federal government (through the National Science Foundation). All of the data collected under the ANES (dating back to 1948) are free and available for download [@anes2020].
+All of the papers and problem sets you prepare for this class are based on data collected in the American National Election Study (ANES), a survey of approximately 5,000 vote-eligible citizens collected and distributed each election year by the Inter-university Consortium for Political and Social Research (ICPSR) in Ann Arbor. The survey data inform work in American politics on mobilization and turnout, campaign effects, and provide insights into how party identification changes over time. The data collection effort is funded by the federal government (through the National Science Foundation). All of the data collected under the ANES (dating back to 1948) are free and available for download [@anes2024].
 
 If you want to see question wording or other details, you have to access the complete ANES codebook on ELearning. Some variables may include responses like DK (“Don’t know”) or NA (‘Not Available”). The codebook may indicate these responses are associated with a number, but we treat these as missing values.
 
@@ -134,16 +132,16 @@ Party identification is based on responses to a couple of questions:
 
 Responses to those questions permit us to place individuals in one of seven party identification categories. 
 
-### Party identification in 2020 {-}
+### Party identification in 2024 {-}
 
-Individual responses from the 2020 survey are summarized in Table \@ref(tab:table22). Note that the responses include the numbers -8 and -9. These numbers indicate that there is no data for those respondents – the individual skipped or refused to answer one of the questions. Nearly every respondent offered a response to the question.
+Individual responses from the 2024 survey are summarized in Table \@ref(tab:table22). Note that the responses include the numbers -8 and -9. These numbers indicate that there is no data for those respondents – the individual skipped or refused to answer one of the questions. Nearly every respondent offered a response to the question.
 
-**Table \@ref(tab:table22)** Frequency table for party identification in 2020
+**Table \@ref(tab:table22)  Frequency table for party identification in 2024**
 ```{r table22, echo=FALSE}
 # Read the data
-anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
+anes2024 <- read_dta("anes_timeseries_2024_stata_20250430.dta")
 # Create a simple frequency table for the raw party id responses
-kable(table(anes2020$V201231x),
+kable(table(anes2024$V241227x),
       caption="",
       digits = c(1,1),
       align = "lc",
@@ -151,23 +149,24 @@ kable(table(anes2020$V201231x),
 ```
 The frequency table above just gives us the numbers of people in each category, but we are typically more interested in the percentage. The table below improves on Table \@ref(tab:table22) in couple of ways.  In addition to calculating the percentage, this table now labels the responses (so you can see, for instance that a "1" is a Strong Democrat).  This table also uses survey weights to accurately translate the ANES respondents into a nationally representative sample.  We won't discuss the technology or numbers behind survey weights very much, but all of the results you will be relying on use the appropriate weights. This is our best estimate for the distribution of party identification of eligible voters (citizens, 18 and over) in the United States. 
 
-**Table \@ref(tab:table23)** Party identification in 2020, weighted
+**Table \@ref(tab:table23)  Party identification in 2024, weighted**
 ```{r table23, echo=FALSE}
 
-# Specify the survey weights - this is full sample post-election weight
-anes2020$weight<-anes2020$V200010b 
+# Check that this is the correct weight
+# Should be the "full sample post-election weight"
+anes2024$weight<-anes2024$V240105b
 
 # Identify missing values for party id
-anes2020$partyid<-car::recode(anes2020$V201231x, "-9:-7=NA") 
+anes2024$partyid<-car::recode(anes2024$V241227x, "-9:-7=NA") 
 
 # Create the labels
-anes2020$partyid <- factor(anes2020$partyid,
+anes2024$partyid <- factor(anes2024$partyid,
 levels = c(1,2,3,4,5,6,7), ordered=TRUE,
 labels = c("Strong Democrat", "Not very strong Democrat", "Leaning Democrat", "Independent", "Leaning Republican", "Not very strong Republican", "Strong Republican"))
 
 # Create the table
 # Figure this out in tidyverse dplyr
-table<-100*prop.table(wtd.table(x = anes2020$partyid, weights = anes2020$weight))
+table<-100*prop.table(wtd.table(x = anes2024$partyid, weights = anes2024$weight))
 kable(table, 
      caption=" ",
       digits = c(1,1),
@@ -179,7 +178,7 @@ kable(table,
 
 We could also summarize these numbers with a simple bar chart.  The bar chart highlights the fact - surprising to some - that two most common responses to this questions are Strong Democrat and Strong Republican.  The table confirms that there are more Strong Democrats than Strong Republicans, but only by a narrow margin.
 
-**Figure \@ref(fig:figure23)** Party identification, 2020
+**Figure \@ref(fig:figure23)  Party identification, 2024**
 ```{r figure23, echo=FALSE, out.width = '95%', fig.align = 'center', fig.cap="\\label{fig:figure23}"}
 figure3<-as.data.frame(table)
 ggplot(figure3, aes(x=Var1, y=Freq)) +
@@ -188,14 +187,14 @@ ggplot(figure3, aes(x=Var1, y=Freq)) +
    theme(axis.text.x=element_text(size=rel(0.65)))
 ```
 
-It is clear from the figure that the mode is Strong Democrat, and it appears that the electorate as a whole leans slightly Democratic - each of the three Democratic categories is larger than the corresponding Republican category. This is a good way to see the distribution and to communicate the idea that electorate leans Democratic.  But we need a more precise way to both describe this distribution and to compare distributions we might observe for two different groups.
+It is clear from the figure that the mode is Strong Democrat, and it appears that the electorate as a whole leans slightly Democratic - two of the three Democratic categories are larger than the corresponding Republican category. This is a good way to see the distribution and to communicate the idea that electorate leans Democratic.  But we need a more precise way to both describe this distribution and to compare distributions we might observe for two different groups.
 
 ### How has this distribution changed over time?{-}
 
-You might be curious about the proportion of the electorate that identifies with Democrats or Republicans today, compared to what we saw during the Bush administration or Obama administration.   A long view of the balance between Republican and Democrats is reproduced as Figure \@ref(fig:figure24) , below.  This is from the ANES and based on the 7-point scale we used above.  The figure shows you the the total percentage of women and men who identified as some type of Democrat (1,2, or 3)  You can see the Democrats enjoyed a substantial, even overwhelming advantage in the early 1960s, with nearly 2/3 of all American identifying with the party.  But that advantage has been decaying for 70 years and support for Democrats continued to erode under President Trump.  Today, about 45% of the electorate identifies as some form of Democrat and 42% as some form of Republican.  We may, soon, have an election cycle where more people identify as Republican than Democratic, which will come as a surprise to the many people who think that the Republican brand is a demographic corner, doomed to decline as American becomes more diverse and more secular. Also, notice that the support for Democrats decayed more rapidly for men than women, the basis for the contemporary gender gap in presidential voting.
+You might be curious about the proportion of the electorate that identifies with Democrats or Republicans today, compared to what we saw during the Bush administration or Obama administration.   A long view of the balance between Republican and Democrats is reproduced as Figure \@ref(fig:figure24) , below.  This is from the ANES and based on the 7-point scale we used above.  The figure shows you the the total percentage of women and men who identified as some type of Democrat (1,2, or 3)  You can see the Democrats enjoyed a substantial, even overwhelming advantage in the early 1960s, with nearly 2/3 of all American identifying with the party.  But that advantage has been decaying for 70 years and support for Democrats continued to erode under President Trump.  Today, about 47% of the electorate identifies as some form of Democrat and 45% as some form of Republican.  We may, soon, have an election cycle where more people identify as Republican than Democratic, which will come as a surprise to the many people who think that the Republican brand is a demographic corner, doomed to decline as American becomes more diverse and more secular. Also, notice that the support for Democrats decayed more rapidly for men than women, the basis for the contemporary gender gap in presidential voting.
 
-**Figure \@ref(fig:figure24)** Identification with Democrats over time, women compared to men.
-```{r figure24, fig.cap="\\label{fig:figure24}Source: @anesguide", echo=FALSE, out.width = '95%', warning=FALSE, fig.align = 'center'}
+**Figure \@ref(fig:figure24)  Identification with Democrats over time, women compared to men.**
+```{r figure24, fig.cap="\\label{fig:figure24}Source: ANES (2021)", echo=FALSE, out.width = '95%', warning=FALSE, fig.align = 'center'}
 library(grid) 
 library(tiff)
 grid::grid.raster(tiff::readTIFF( "images/partyid.tiff") )
@@ -214,7 +213,7 @@ Table \@ref(tab:table24) reproduces the descriptive statistics that summarize pa
 
 ```{r prepdata, echo=FALSE}
 # Remove missing weights and party ids with filter before passing to summarise
-test<-anes2020 %>% filter(partyid!="NA", weight!="NA")
+test<-anes2024 %>% filter(partyid!="NA", weight!="NA")
 
 # all of these need to be weighted
 stats<- test %>% 
@@ -226,7 +225,7 @@ stats<- test %>%
     `Standard deviation`=sqrt(Variance))
 ```
 
-**Table \@ref(tab:table24).** Descriptive statistics for party identification, entire sample, 2020
+**Table \@ref(tab:table24)  Descriptive statistics for party identification, entire sample, 2024**
 
 ```{r table24, echo=FALSE}
 kable(t(stats), digits=2, caption="")
@@ -238,9 +237,9 @@ First, notice the mode (mode=1.00). The most frequent response is Strong Democra
 
 Second, remember that the number attached to Independent is 4. Since the mean party id of the sample is 3.93, the electorate is barely leaning toward the lower end of the scale or slightly Democratic.
 
-Finally, the median is 4 meaning the 50th percentile is in the Independent category. The percentages confirm this. Only 43.8% of the responses are in the first three categories (sum of the first three categories reported in Table \@ref(tab:table23)), so the 50th percentile is 4. And only 41.6% of the responses are in the last three categories. So while the electorate leans toward the Democrats, any candidate, Republican or Democratic, must reach some independents in order to gain support from 50% of the electorate.
+Finally, the median is 4 meaning the 50th percentile is in the Independent category. The percentages confirm this. Only 47% of the responses are in the first three categories (sum of the first three categories reported in Table \@ref(tab:table23)), so the 50th percentile is 4. And only 45% of the responses are in the last three categories. So while the electorate leans toward the Democrats, any candidate, Republican or Democratic, must reach some independents in order to gain support from 50% of the electorate.
 
-We can see that the standard deviation for the entire electorate is 2.26, so, while this doesn't tell us much, we can use this number as a benchmark to compare groups. If you observe a group with a standard deviation higher than 2.26, then that group is more spread out - more polarized - than the electorate as a whole.  If you observe a smaller standard deviation, then the group is more concentrated in a few party id categories.
+We can see that the standard deviation for the entire electorate is 2.25, so, while this doesn't tell us much, we can use this number as a benchmark to compare groups. If you observe a group with a standard deviation higher than 2.25, then that group is more spread out - more polarized - than the electorate as a whole.  If you observe a smaller standard deviation, then the group is more concentrated in a few party id categories.
 
 ## Comparing two groups
 
@@ -250,16 +249,16 @@ Most media coverage you hear suggests that women have distinct political prefere
 
 The output below reproduces the frequencies and descriptive statistics for men and women using the same format as you will see in output for the problem set and paper.  The figure and the first table are exactly the same information, just presented two different ways.  You should use both the percentages and the statistics you produce in your paper and Problem Set 1. 
 
-### **Women, 2020** {-}
+### **Women, 2024 ANES** {-}
 
-```{r women, echo=FALSE}
+```{r women, eval=TRUE, out.width = '95%', fig.align = 'center', echo=FALSE}
 # Create the factor for gender
-anes2020$female<-car::recode(anes2020$V201600, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
-anes2020$female <- factor(anes2020$female,
+anes2024$female<-car::recode(anes2024$V241551, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
+anes2024$female <- factor(anes2024$female,
     levels = c(1,0),
     labels = c("Women", "Men"))
 # Remove missing weights and party ids with filter before passing to summarise
-test<-anes2020 %>% filter(partyid!="NA", weight!="NA", female=="Women")
+test<-anes2024 %>% filter(partyid!="NA", weight!="NA", female=="Women")
 
 table<-100*prop.table(wtd.table(x = test$partyid, weights = test$weight))
 
@@ -290,10 +289,10 @@ stats<- test %>%
 kable(t(stats), digits=c(2,2), align = "cc", col.names=c("Descriptive statistics"))    
 ```
 
-### **Men, 2020** {-}
+### **Men, 2024 ANES** {-}
 
-```{r men, echo=FALSE}
-test<-anes2020 %>% filter(partyid!="NA", weight!="NA", female=="Men")
+```{r men, eval=TRUE, out.width = '95%', fig.align = 'center', echo=FALSE}
+test<-anes2024 %>% filter(partyid!="NA", weight!="NA", female=="Men")
 
 table<-100*prop.table(wtd.table(x = test$partyid, weights = test$weight))
 
@@ -332,21 +331,21 @@ Notice that while the mean for both groups is between 3 and 5, these responses a
 
 #### Mode and median {-}
 
-The statistics do reveal some important differences: men have a different mode (Strong Republican) than women (Strong Democrat).  But the median is 4 for both, so a majority of men are not Republican identifiers and a majority of women are not Democratic identifiers, consistent with the figure above. 
+The statistics do reveal some important differences: men have a different mode (Strong Republican) than women (Strong Democrat).  And the median is also different - while a majority of men are not Republican identifiers,  a majority of women are Democratic identifiers, consistent with the figure above. 
 
 #### Standard deviation {-}
 
-Both groups are spread out across the seven categories, rather than concentrated in a few categories near the mean. The smaller number is men, so men may be slightly more likely to be in the categories closest to the mean: 3, 4 or 5.  But these distributions and the numbers are very similar. 
+Both groups are spread out across the seven categories, rather than concentrated in a few categories near the mean. The smaller number is men, so men may be slightly more likely to be in the categories closest to the mean: 3 and 5, in particular.  But these distributions and the numbers are very similar. 
 
 ### Putting in at all together {-}
 
-Women lean slightly more Democratic than men: the average party id for women is 3.74 while the average party id for men is 4.13.  The median for both groups is 4.00, so neither party has a majority in either group - about 48% of women in are in the first categories, some form of Democrat.  And about 45% of men are some type of Republican.  Consistent with what we saw with the mean, the most frequent response for men is "Strong Republican" - 22%, while the most frequent response for women is "Strong Democrat" - 26%.  The second most common response for both groups is the opposite category of strong partisan identifier - so lots of Strong Republican women and Strong Democratic men.  Since the distributions are so similar in that way, the standard deviation for both groups is about the same (close to 2.2)
+Women lean slightly more Democratic than men: the average party id for women is 3.77 while the average party id for men is 4.08.  The median for men is 4.00, so neither party has a majority in that group - about 48% of men are some type of Republican.  Somewhat surprising given the mean, the most frequent response for men is "Strong Democrat" - 20%, and the most frequent response for women is "Strong Democrat" - 25%.  The second most common response for both groups is the opposite category of strong partisan identifier - so lots of Strong Republican women.  Since the distributions are so similar in that way, the standard deviation for both groups is about the same (close to 2.2).  One surprise to me was that the while women leaned Democratic, there was higher percentage of women who identified as Strong Republican (21%) than men (20%).  This is a small difference but very unexpected.
 
 To fully describe the party identification of each group, we used the descriptive statistics *and* the percentages. We can be much more precise in our comparisons using these numbers, rather than simply describing distributions and whether they are skewed or lean or indicate one party has more support than other.
 
 ## What’s next?
 
-The way that we approach group differences in this chapter was deliberate and systematic in the sense that we came up with some expectations or hypotheses to test. Based on media coverage of US elections, we expected that women and men would have very different party identifications. This turned out to be wrong.  Had we started with a more formal effort to come up with a hypothesis, we might have seen this coming.  When it comes to basic human behavior – whether you approach things from the perspective of a sociologist (what is our identity), a psychologist (what are our habits) or an economist (what are your preferences) – you would be hard-pressed to make the case that women are fundamentally different from men – at least in ways that are politically relevant.  (It could be and is the case that women occupy different social and economic positions than men – lower paid, for instance, that might impact political choices.) For a broader discussion of the ways that gender differences can or might matter, you could take a look at the third chapter of a recent book on women’s voting behavior, *A Century of Votes for Women* [@CVW]. 
+The way that we approach group differences in this chapter was deliberate and systematic in the sense that we came up with some expectations or hypotheses to test. Based on media coverage of US elections, we expected that women and men would have very different party identifications. This turned out to be wrong.  Had we started with a more formal effort to come up with a hypothesis, we might have seen this coming.  When it comes to basic human behavior – whether you approach things from the perspective of a sociologist (what is our identity?), a psychologist (what are our habit?s) or an economist (what are your preferences?) – you would be hard-pressed to make the case that women are fundamentally different from men – at least in ways that are politically relevant.  (It could be and is the case that women occupy different social and economic positions than men – lower paid, for instance, that might impact political choices.) For a broader discussion of the ways that gender differences can or might matter, you could take a look at the third chapter of a recent book on women’s voting behavior, *A Century of Votes for Women* [@CVW]. 
 
 A second challenge of the approach we take in this chapter is that we are simply describing differences in the ANES sample.  How can we know if these differences in party identification – which are fairly small – actually tell us anything about the broader population of women and men in the US electorate?  We need to have ways to test if the group differences we observe permit us to make an inference about group differences in the population.  That is the focus of the next three chapters.
 

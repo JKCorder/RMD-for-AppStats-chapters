@@ -22,19 +22,19 @@ Public policy experiments raise similar challenges.  In order to test the effect
 
 But the benefits of experimental approaches can be large: what if we had access to good data about exactly which government programs worked and with what effect.  We could make better decisions about the allocation of resources.  This insight is behind a recent collection of essays published as *Moneyball for Government* [@nussle].  Any program that has high levels of demand and low levels of available services is a candidate for an experiment.  One randomly selected group of applicants – to a charter school or for a particular drug treatment program or repeat offender intervention – can receive the treatment. The remainder of the applicants can be wait-listed for one year. After one year, is the treatment group better off?  In medicine, this experimental design is being advocated not just as a way to evaluate new drugs, but for all sorts of innovations in medical practice (see @sangerkatz2014 for an overview of this controversy).
 
-### An example: Job Training and Partnership Act (JTPA) programs 
+### An example: Job Training and Partnership Act (JTPA) programs  {-}
 
 An early and compelling example of this type of research involved an evaluation of Job Training and Partnership Act (JTPA) programs in the late 1980s.  The JTPA programs offered classroom training, on-the-job training, or job search assistance to people who are out of work.  In September, 1987, two-thirds of the eligible population who applied to the program were directed to services, one-third were deferred for 18 months.  Do training and services offered to the unemployed increase earnings?  The results are summarized in the two figures below.
 
-Figure 3.1  **Estimated effects of JTPA programs on earnings**
+**Figure 3.1. Estimated effects of JTPA programs on earnings**
 
-Women 21 and over
+**Women 21 and over**
 
 ```{r jhr1, echo=FALSE, out.width = '80%'}
 knitr::include_graphics("images/bloom19971a.png")
 ```
 
-Women 18-20
+**Women 18-20**
 
 ```{r jhr2c, echo=FALSE, out.width = '80%'}
 knitr::include_graphics("images/bloom19972a.png")
@@ -49,8 +49,9 @@ The results are remarkable.  The benefits of the program for adult women were la
 How do we compare two groups if we can’t do an experiment?  For the first assignment you compared the party identification of two groups.  Your strategy was to compare a few key descriptive statistics and to report a few percentages that summarized group differences. You used a frequency distribution to produce the percentages – this is known as a “one-way” table. We can also use figures and two-way tables to do summarize the same types of information.
 
 ```{r anes, echo=FALSE}
-# Read the data
-anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
+# Read the latest version of the ANES (April 30, 2025)
+anes2024 <- read_dta("anes_timeseries_2024_stata_20250430.dta")
+
 
 # Variables needed for this chapter:
 # Weight
@@ -61,42 +62,44 @@ anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
 # Income - not in categories
 # Ideology
 
-anes2020$weight<-anes2020$V200010b 
-# This is the "full sample post-election weight"
+# Check that this is the correct weight
+# Should be the "full sample post-election weight"
+anes2024$weight<-anes2024$V240105b
 
-# Party id
-anes2020$partyid<-car::recode(anes2020$V201231x, "-9:-7=NA") 
-anes2020$partyid <- factor(anes2020$partyid,
+# Identify missing values for party id
+anes2024$partyid<-car::recode(anes2024$V241227x, "-9:-7=NA") 
+
+# Create the labels
+anes2024$partyid <- factor(anes2024$partyid,
 levels = c(1,2,3,4,5,6,7), ordered=TRUE,
 labels = c("Strong Democrat", "Not very strong Democrat", "Leaning Democrat", "Independent", "Leaning Republican", "Not very strong Republican", "Strong Republican"))
 
 # Income
-anes2020$income<-car::recode(anes2020$V201617x, "-9:0=NA")
-anes2020$income3<-car::recode(anes2020$V201617x, "-9:0=NA; 1:4=1; 5:19=2; 20:22=3")
-anes2020$income3 <- factor(anes2020$income3,
+anes2024$income<-car::recode(anes2024$V241566x, "-9:0=NA")
+anes2024$income3<-car::recode(anes2024$V241566x, "-9:0=NA; 1:8=1; 9:25=2; 26:28=3")
+anes2024$income3 <- factor(anes2024$income3,
 levels = c(1,2,3),
 labels = c("Under $25,000", "$25,000 to $150,000", "Over $150,000"))
 
 # Education
-anes2020$education<-car::recode(anes2020$V201510, "-9:0=NA; 95=NA")
-anes2020$college  <-car::recode(anes2020$V201510, "-9:0=NA; 95=0; 1:5=0; 6:8=1")
+anes2024$education<-car::recode(anes2024$V241463, "-9:0=NA; 95=NA")
+anes2024$college  <-car::recode(anes2024$V241463, "-9:0=NA; 95=0; 1:12=0; 13:16=1")
 
-# This coding is OK - no 998 or 999 (don't recognize or know)
 # Feeling thermometer - Donald Trump
-anes2020$ft_Trump<-car::recode(anes2020$V202144, "-9:-4=NA")
+anes2024$ft_Trump<-car::recode(anes2024$V241157, "-9:-1=NA")
 
 # Ideology self-placement
-anes2020$ideology<-car::recode(anes2020$V201200, "-9:-7=NA") 
-anes2020$ideology <- factor(anes2020$ideology,
+anes2024$ideology<-car::recode(anes2024$V241177, "-9:-7=NA; 99=NA") 
+anes2024$ideology <- factor(anes2024$ideology,
 levels = c(1,2,3,4,5,6,7), ordered=TRUE,
 labels = c("Extremely liberal", "Liberal", "Slightly liberal", "Middle of the road", "Slightly conservative", "Conservative", "Extremely conservative"))
 
 
-# Interest in politics
-anes2020$interest<-car::recode(anes2020$V202407, "-9:-5=NA; 1=4; 2=3; 3=2; 4=1")
-anes2020$interest <- factor(anes2020$interest,
-levels = c(1,2,3,4), ordered=TRUE,
-labels = c("Not at all", "Not very closely" ,"Fairly closely", "Very closely"))
+# Pay attention to politics and elections
+anes2024$interest<-car::recode(anes2024$V241004, "-9:-5=NA; 1=5; 2=4; 3=3; 4=2; 5=1")
+anes2024$interest <- factor(anes2024$interest,
+levels = c(1,2,3,4,5), ordered=TRUE,
+labels = c("Never", "Some of the time" ,"About half of the time", "Most of the time", "Always"))
 
 # Create function for weighted cross-tab <-see below
 # Subset to exclude missing values
@@ -114,14 +117,14 @@ How would you expect the distribution of party id to change across income groups
 
 One way to answer this question empirically is to create a cross-tab of income and party id using the ANES.  For this example, I created a measure of household income divides respondents into three categories - low income, middle income, and high income  The table is reproduced as Table 3.1, below
 
-Table 3.1 **Party identification and income, 2020 ANES**
+**Table 3.1  Party identification and income, 2024 ANES**
 
 ```{r table31 r, echo=FALSE}
-table31<-100*prop.table(wtd.table(anes2020$partyid, anes2020$income3, anes2020$weight), margin=2)
+table31<-100*prop.table(wtd.table(anes2024$partyid, anes2024$income3, anes2024$weight), margin=2)
 kable(table31, digits=1)
 ```
 
-Is this consistent with your expectations?  It is clear that you are roughly 1.5 times likely to be strong Republican if you are in an upper income household (19% compared to 14% for the lower income).  But there are about the same proportion of strong Democrats in upper and lower income households (23% in the upper income households and 27% in lower income households). In Chapter 1 we observed that the highest level of Trump support was from middle income households.  Data on party identification reinforce this conclusion.  The people who are most likely to identify as strong Republican are middle income households. Also notice that the number of independents plunges as you move up the income scale - people in higher income households are more likely to report an identification with one of the major parties.
+Is this consistent with your expectations?  It is clear that you are about equally likely to be Strong Republican if you are in an upper income household or lower income household (about 18%).  But there are more Strong Democrats in upper and lower income households (27% in the upper income households and 20% in lower income households). In Chapter 1 we observed that the highest level of Trump support was from middle income households.  Data on party identification reinforce this conclusion.  The people who are most likely to identify as strong Republican are middle income households. Also notice that the number of independents plunges as you move up the income scale - people in higher income households are more likely to report an identification with one of the major parties.
 
 ### Figures
 
@@ -137,10 +140,10 @@ How are attitudes about Donald Trump related to party id?  How different are str
 
 There are three visualization strategies we could use to summarize the link between the variables we are interested in: a scatterplot, a bar chart of group means, or a line chart for group means.  An example of each is below.  In each figure, the vertical axis represents what we are trying to explain or understand – what is known as the dependent variable (Y).  The horizontal axis represents the predictor – what is known as the independent variable (X).  We are trying to show if there is a link between Y and X. 
 
-Figure 3.2 **Scatterplot.  Donald Trump feeling thermometer and party id**
+**Figure 3.2  Scatterplot.  Donald Trump feeling thermometer and party id**
 
 ```{r figure2, warning=FALSE, message=FALSE, echo=FALSE}
-figure2<-anes2020 %>% filter(anes2020$partyid!="NA")
+figure2<-anes2024 %>% filter(anes2024$partyid!="NA")
 ggplot (figure2, aes(x=partyid, y=ft_Trump))+geom_point()+ylab("Feeling thermometer") + xlab("Party identification") + theme(axis.text.x=element_text(size=rel(0.70)))
 ```
 
@@ -148,16 +151,16 @@ The first figure – the scatterplot – is obviously not very useful. Since the
 
 The second and third figures, below, make things very clear.  There is a steep increase in positive feelings as you move from strong Democrat to strong Republican.  Notice that, as you might have expected, the Independent-leaners are actually strong partisans in their attitudes.
 
-Figure 3.3 **Bar chart of group means. Donald Trump feeling thermometer and party id.**
+**Figure 3.3  Bar chart of group means. Donald Trump feeling thermometer and party id.**
 
 ```{r figure3, warning=FALSE, echo=FALSE, message=FALSE}
 ggplot (figure2, aes(x=partyid, y=ft_Trump))+geom_bar(stat = "summary", fun.y = "mean")+ylab("Feeling thermometer") + xlab("Party identification") + theme(axis.text.x=element_text(size=rel(0.70)))
 ```
 
-Figure 3.4. **Line chart.  Donald Trump feeling thermometer and party id**
+**Figure 3.4  Line chart.  Donald Trump feeling thermometer and party id**
 ```{r figure4, warning=FALSE, message=FALSE, echo=FALSE}
-# anes2020$female<-car::recode(anes2020$V201600, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
-# anes2020$female <- factor(anes2020$female,
+# anes2024$female<-car::recode(anes2024$V201600, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
+# anes2024$female <- factor(anes2020$female,
 #     levels = c(1,0),
 #     labels = c("Women", "Men"))
 # 
@@ -169,14 +172,14 @@ figure4<-figure2 %>% group_by(partyid) %>% summarise(mean=mean(ft_Trump, na.rm=T
 ggplot (figure4, aes(x=partyid, y=mean, group=1))+ylab("Feeling thermometer") + geom_line() +xlab("Party identification") + theme(axis.text.x=element_text(size=rel(0.70)))
 ```
 
-### Income and party identification revisited
+### Income and party identification revisited {-}
 
 We used a table to describe the link between party identification and income in three broad categories.  It might make sense to stick with the original, more finely grained scale of income - which ranges from 1 to 28.  Figure 3.5 – a line chart of average party identification for each of the 28 income categories in the 2020 ANES - suggests that there is a very weak relationship with between household income and party id - higher income households might be slightly more Republican on the party id scale.
 
-Figure 3.5. **Income and party identification**
+**Figure 3.5  Income and party identification**
 
 ```{r figure5, warning=FALSE, message=FALSE, echo=FALSE}
-figure5<-anes2020 %>% group_by(income) %>% summarise(mean=mean(as.numeric(partyid), na.rm=TRUE))
+figure5<-anes2024 %>% group_by(income) %>% summarise(mean=mean(as.numeric(partyid), na.rm=TRUE))
 figure5<-figure5 %>% drop_na()
 ggplot (figure5, aes(x=income, y=mean, group=1))+ylab("Party identification") + geom_line() +xlab("Household income") + theme(axis.text.x=element_text(size=rel(0.70)))
 ```
@@ -226,14 +229,14 @@ We might produce a figure to communicate what we have learned to a client or col
 
 In many research situations, the variables of interest are both some type of scale - either an interval or an ordinal variable.  This would include concrete measures like household income, year of education, or age, and concepts that we order in a meaningful way – like ideology (from extreme liberal to extreme conservative) or party identification (from strong Democrat to strong Republican) or a feeling thermometer (from 0 – don’t like it – to 100- really like it).  If you are interested in determining the relationship between two variables that are scales, then you should calculate and use the correlation coefficient.
 
-### What is correlation?
+### What is correlation? {-}
 
 Correlation is a measure of association appropriate for interval level variables (and can be applied to ordinal variables that are “approximately interval” e.g. party id or ideology).  The test statistic ranges from -1 to +1 and gives you a one-number summary of the direction and size of the relationship between $X$ and $Y$.  
 
 If two variables have a correlation of +1 or -1, then they are perfectly correlated.  If correlation is greater than 0, then the variables are described as positively related or directly related.  If correlation is less than 0, then the variables are described as negatively related or inversely related.  As the correlation moves away from zero (closer to +1 or -1), the stronger the link between $X$ and $Y$. A correlation of zero is a null relationship.  Negative does not mean null. Null is zero.  To give you a sense how numbers translate into data, the figures below show hypothetical samples with different levels of correlation.
 
 
-Figure 3.6 **Positive, negative and null effects**
+**Figure 3.6  Positive, negative and null effects**
 ```{r example, echo=FALSE, comment="", message=FALSE, warning=FALSE }
 complement <- function(y, rho, x) {
   if (missing(x)) x <- rnorm(length(y)) # Optional: supply a default if `x` is not given
@@ -260,7 +263,7 @@ ggplot(X, aes(z,y, group=rho)) +
 
 You can always describe your expectations using these numbers. For example, you would expect to observe that as the education level of a respondent increased, income would also increase. Income should be positively correlated with education. Maybe something in between what we observe above for 0.2 and 0.6?   
 
-### Computation
+### Computation {-}
 
 Computation of the correlation coefficient requires that we compute the covariance of two variables and the standard deviation of each variable.
 
@@ -286,7 +289,7 @@ $$
 
 This number (the correlation) can never be large than 1.0 and never be smaller than -1.0.  The farther the number is from zero, the larger the effect of $X$ on $Y$.
 
-### Three important limits of the correlation coefficient
+### Three important limits of the correlation coefficient {-}
 
 #### Correlation is most useful as a relative measure {-}
 
@@ -296,17 +299,17 @@ First, correlation is best used as a description of the direction and relative s
 
 Second, statements about correlation also assume that the relationship between two variables is linear (or approximately linear). Nonlinear relationships may not be reflected in correlation. 
 
-For instance, we could not test the link between party id and attention to politics with a correlation coefficient. This would not work since strong Republicans and strong Democrats are both likely to pay attention to campaigns, while Independents are not likely to pay attention – the relationship between party id and attention is U-shaped or nonlinear. The link between partissanship and interest in politics in 2020 is summarized in Figure 3.5.
+For instance, we could not test the link between party id and attention to politics with a correlation coefficient. This would not work since strong Republicans and strong Democrats are both likely to pay attention to campaigns, while Independents are not likely to pay attention – the relationship between party id and attention is U-shaped or nonlinear. The link between partissanship and interest in politics in 2024 is summarized in Figure 3.5.
 
-Figure 3.5. **Example of a U-shaped relationship. Partisanship and interest in politics**
+**Figure 3.5  Example of a U-shaped relationship. Partisanship and interest in politics**
 
 ```{r figure7, echo=FALSE, comment="", message=FALSE, warning=FALSE}
-figure7<-anes2020 %>% group_by(partyid) %>% summarise(mean=mean(as.numeric(interest), na.rm=TRUE))
+figure7<-anes2024 %>% group_by(partyid) %>% summarise(mean=mean(as.numeric(interest), na.rm=TRUE))
 figure7<-figure7 %>% drop_na()
 ggplot (figure7, aes(x=partyid, y=mean, group=1))+ylab("Interest in politics") + geom_smooth(span=9, se=FALSE) + geom_line() +xlab("Party identification") + theme(axis.text.x=element_text(size=rel(0.70)))
 ```
 
-Notice, again, that leaners are more like strong partisans - very interested in politics compared to weak partisans.  The interest scale goes from 1 to 4 and 3.0 indicates that someone follows politics "Fairly closely."  The blue span is the best-fitting curve.
+Notice, again, that leaners are more like strong partisans - very interested in politics compared to weak partisans.  The interest scale goes from 1 to 5 and 3.0 indicates that someone follows politics "About half of the time."  The blue span is the best-fitting curve.
 
 #### Correlation doesn't work for arbitrary categories {-}
 
@@ -314,36 +317,36 @@ Finally, never use correlation if variables are not scales. Recall that we have 
 
 Any time the order of the categories is arbitrary (race, marital status, employment status, region, religion), you should not use correlation since it will be misleading.
 
-### Reading a correlation matrix
+### Reading a correlation matrix {-}
 
 Most statistical software produces correlations in the form of a matrix.  Table 3.2 reproduces output that summarizes the link between education and income.  We just need to focus one number for now, the Pearson correlation at the top right corner.
 
-Table 3.2 **Correlation between education and income**
+**Table 3.2  Correlation between education and income**
 
 ```{r table2, echo=FALSE, comment=""}
-df<- anes2020 %>% select(income, education, weight) %>% drop_na()
+df<- anes2024 %>% select(income, education, weight) %>% drop_na()
 test<-cov.wt(df, wt=df$weight, cor=TRUE)
 round(test$cor[1:2,1:2], digits=3)
 
-df<- anes2020 %>% select(partyid, ft_Trump, weight) %>% drop_na() %>% mutate(partyid=as.numeric(partyid))
+df<- anes2024 %>% select(partyid, ft_Trump, weight) %>% drop_na() %>% mutate(partyid=as.numeric(partyid))
 test<-cov.wt(df, wt=df$weight, cor=TRUE)
 # No output - this shows up in the Powerpoint
 #round(test$cor[1:2,1:2], digits=3)
 ```
  
-The correlation between income and education in this sample is 0.369.  We can learn two things from this output.  First, the link between income and education is positive, more years of education leads to higher average income.  Second, the link is not perfect – there are many poorly educated high income respondents and highly educated lower income respondents. As we expected, the actual correlation was between 0.2 and 0.6.
+The correlation between income and education in this sample is 0.461.  We can learn two things from this output.  First, the link between income and education is positive, more years of education leads to higher average income.  Second, the link is not perfect – there are many poorly educated high income respondents and highly educated lower income respondents. As we expected, the actual correlation was between 0.2 and 0.6.
 
 Note that the most useful way to use correlation is to compare the correlations between two pairs of variables from the same dataset.  Table 3.3 treats ideology as our dependent variable $Y$ and tests the link with two independent variables, education and income.  The ideology scale is order from 1=extremely liberal to 7=extremely conservative – so this variable is ordinal – and higher means more conservative.
 
-Table 3.3  **Correlation between ideology, party id, education, and income**
+**Table 3.3  Correlation between ideology, party id, education, and income**
 ```{r table3, echo=FALSE, comment="", warning=FALSE}
-df<- anes2020 %>% select(ideology, partyid, income, education, weight) %>% drop_na() %>% mutate(ideology=as.numeric(ideology), partyid=as.numeric(partyid))
+df<- anes2024 %>% select(ideology, partyid, income, education, weight) %>% drop_na() %>% mutate(ideology=as.numeric(ideology), partyid=as.numeric(partyid))
 test<-cov.wt(df, wt=df$weight, cor=TRUE)
 round(test$cor[1:4,1:4], digits=3)
 # 
 ```
 
-This output is in the form of a correlation matrix – so you can see all three correlations – party vs. ideology, education vs. ideology, and income vs. ideology in one table.  In this sample, the correlation between ideology and income is very close to zero (-0.005) – there is no relationship.  The link between education and ideology is a bit stronger and negative (-0.141) – more education means a slightly lower ideology or more liberal.  It would be safe to conclude that poorly educated respondents are the most conservative and highly educated are the most liberal. But party id is clearly the best predictor (0.735 - the farthest of any of the correlations from zero). We can also see that education and income are more closely  related to each other (0.350) than either are to ideology.  The number in this table is slightly different than immediately above since a few observations were missing - meaning that a few respondents did not answer the ideology question.
+This output is in the form of a correlation matrix – so you can see all three correlations – party vs. ideology, education vs. ideology, and income vs. ideology in one table.  In this sample, the correlation between ideology and income is close to zero (-0.078) – there is a weak relationship.  The link between education and ideology is a stronger and negative (-0.202) – more education means a slightly lower ideology or more liberal.  It would be safe to conclude that poorly educated respondents are the most conservative and highly educated are the most liberal. But party id is clearly the best predictor (0.737 - the farthest of any of the correlations from zero). We can also see that education and income are more closely  related to each other (0.429) than either are to ideology.  The number in this table is slightly different than immediately above since a few observations were missing - meaning that a few respondents did not answer the ideology question.
 
 ## Conclusion
 

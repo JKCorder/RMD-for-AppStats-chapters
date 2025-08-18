@@ -1,30 +1,15 @@
-
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
-library(haven)
-library(knitr)
-library(tidyverse)
-library(questionr)
-library(matrixStats)
-
-windowsFonts(A = windowsFont("Garamond"))
-theme_set(theme_classic(base_size = 12,  base_family="A"))
-```
-
 # Measures of association: t-test
-
-<!-- Add this info - Gossett's data from Kalamazoo....https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2008.00279.x -->
 
 ## What is the t-test?
 
 In many research situations, the $Y$ variable is some type of scale - either an interval or an ordinal variable.  This would include concrete measures like household income, year of education, or age and concepts that we order in a meaningful way – like ideology (from extreme liberal to extreme conservative) or party identification (from strong Democrat to strong Republican) or a feeling thermometer (from 0 – don’t like it – to 100- really like it).  But the $X$ variable may be a category: race, marital status, gender, employment status.  If you are interested in determining the relationship between two variables when $Y$ is a scale, and $X$ is a category, then a t-test is the appropriate measure of association.
 
-We have used statistics (mean, median, and standard deviation) to describe individual variables. We will use a simple test statistic (t-test) to determine if two groups in a sample are different. T-tests are most appropriate and informative when you compare two groups (male/female, straight ticket / split ticket, Northern/Southern) on a continuous scale.
+We have used statistics (mean, median, and standard deviation) to describe individual variables. We will use a simple test statistic (t-test) to determine if two groups in a sample are different. T-tests are most appropriate and informative when you compare two groups (male/female, working / not working, Northern/Southern) on a continuous scale.
 
 Recall that we use measures of association to describing relationships between variables.  We identify a dependent variable ($Y$), an independent variable ($X$), and we have a theory about how $X$ influences $Y$.  The measure of association helps use be precise and clear about three things:
-the direction of relationship (does changing from one category of $X$ to another increase (+) $Y$ or decrease (-) $Y$
-the size of the effect (does $X$ have a big impact on $Y$ or small?) 
-whether or not effects in the sample are statistically significant (Could the observed effect be due to chance or sampling error)?
+- the direction of relationship (does changing from one category of $X$ to another increase (+) $Y$ or decrease (-) $Y$
+- the size of the effect (does $X$ have a big impact on $Y$ or small?) 
+- whether or not effects in the sample are statistically significant (Could the observed effect be due to chance or sampling error)?
 
 We covered size and direction in Chapter 3, so the focus of this chapter is broadening your understanding of statistical significance.  To do this, we talk about inference and introduce the concept of a sampling distribution.  After the preliminaries, we review some t-test output related to the National Rifle Association (NRA) feeling thermometer. At the end of the chapter, you should have a sense of what statistical significance means.
 
@@ -41,6 +26,7 @@ We use random sampling since we want to make inferences about the population fro
 ## Sampling distribution of the mean
 
 The mean has a sampling distribution – we didn’t talk about this in Chapter 2 since I wanted to focus on interpretation of descriptive statistics rather than the sampling distributions.
+
 Consider an experiment:  If we took 1,000 random samples (or any really large number of samples) from a population it happens to be the case that the sample means – the means from each of the 1,000 samples - are distributed normally with some features we understand,
 
 The mean of the sample means is equal to the population mean (the sample mean is an unbiased estimate of the population mean).  On average, our random samples will be accurate. 
@@ -55,7 +41,7 @@ Since we know the mean and standard deviation of this normal distribution, we ca
 
 So, since our sampling distribution is also normal, we know that any 95% of the samples we draw in our experiment would be within -2/+2 standard deviations of the mean.  This is a powerful fact we will leverage to make an inference about the population from our sample.
 
-#### Figure 4.1  The standard normal distribution
+**Figure 4.1  The standard normal distribution**
 ```{r figure1, echo=FALSE}
 
 # Modified - originally picked this up from github Jeffrey Arnold
@@ -102,35 +88,37 @@ If you have in front of you data from a single random sample – you can use sof
 
 ```{r anes, echo=FALSE}
 # Read the data
-anes2020 <- read_dta("anes_timeseries_2020_stata_20210719.dta")
+anes2024 <- read_dta("anes_timeseries_2024_stata_20250430.dta")
 
 # Variables needed for this chapter:
 # Weight
 # Age
-# Tea Party feeling thermometer
+# NRA feeling thermometer
 # Gender
 # Race
 
-anes2020$weight<-anes2020$V200010b 
-# This is the "full sample post-election weight"
+# Should be the "full sample post-election weight"
+anes2024$weight<-anes2024$V240105b
 
-anes2020$age<-car::recode(anes2020$V201507x, "-9:-8=NA")
-# AGE -9 is refused and 80 is 80 and over
+anes2024$age<-car::recode(anes2024$V241458x, "-9:-1=NA")
+# AGE -2 is refused and 80 is 80 and over
 
 # Feeling thermometer - NRA 
-anes2020$ft_NRA<-car::recode(anes2020$V202178, "-9:-4=NA ;998:999=NA")
+anes2024$ft_NRA<-car::recode(anes2024$V242153, "-9:-1=NA ;998:999=NA")
 
 # Race in two categories
-anes2020$minority<-car::recode(anes2020$V201549x , "-9:-8=NA; 1=0; 2:6=1")
+anes2024$minority<-car::recode(anes2024$V241501x , "-9:-3=NA; 1=0; 2:6=1")
 
-# Gender in two categories
-anes2020$female<-car::recode(anes2020$V201600, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
+# Create the factor for gender
+anes2024$female<-car::recode(anes2024$V241551, "1=0; 2=1; -9=NA") # 2 is Female, recoded to 1 is female
 
 ```
 
-#### Table 4.1.  Descriptive statistics for age in the 2020 ANES {-}
+
+
+**Table 4.1  Descriptive statistics for age in the 2024 ANES**
 ```{r table1, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
-test<-anes2020 %>% drop_na(age, weight)
+test<-anes2024 %>% drop_na(age, weight)
 stats<- test %>% 
   summarise(
     N = nrow(test),
@@ -145,12 +133,12 @@ stats2<-t(stats)
 
 kable(format(stats2, digits=4, drop0trailing=TRUE), align = "cc", col.names=c("Descriptive statistics"))
 ```
- 
+<br> 
 Using the formula above, the standard error of the mean would be:
 
-$$ \sigma_M=17.43 / \sqrt{7159} = 0.206 $$
-$$ ME = 2 * .206=0.412$$
-We know (with 95% certainty) that the population mean is +/- 2 standard error of the means from the sample mean.  The *95% confidence interval* is 47.26 +/- 0.412 years.  That is remarkable – we can be very confident that we know the true age of the actual very large US electorate within less than about 5 months (0.4 of a year).
+$$ \sigma_M=18.07 / \sqrt{2759} = 0.344 $$
+$$ ME = 2 * 0.344=0.688$$
+We know (with 95% certainty) that the population mean is +/- 2 standard error of the means from the sample mean.  The *95% confidence interval* is 48.06 +/- 0.688 years.  That is remarkable – we can be very confident that we know the true age of the actual very large US electorate within less than about 9 months (0.75 of a year).
 
 >The key lesson: the “margin of error” associated with the survey response is 2 times the standard error of the mean.  
 
@@ -171,7 +159,7 @@ As you see on the news, if you ask 1,000 people if they favor or do not favor a 
 
 One implication to note here.  What if we were to consider how the collection of additional information would improve our estimates?   Since the standard error of the mean drops as the sample size gets larger (we are dividing by the square root of the number of observations), each new observation improves our estimates.  The figure below shows this improvement for the 0/1 question example above.  Assuming the standard deviation is 0.5, we can see how the margin of error declines as the sample size increases.  
 
-#### Figure 4.2.    Margin of error if sample standard deviation ~ 0.5, for samples from 100 to 2500 {-}
+#### Figure 4.2   Margin of error if sample standard deviation ~ 0.5, for samples from 100 to 2500 {-}
 
 ```{r figure2, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
 n<-seq(100,2500,1)
@@ -196,26 +184,26 @@ $$t=\frac{(\mu_1-\mu_2)}  {\sqrt{(\sigma_1^2/n_1)+(\sigma_2^2/n_2)}}$$
 
 >Note: if the sample means are identical, the value of t is zero.  As the sample means diverge, the value of t will increase.
 
-### The t distribution
+### The t distribution {-}
 
 Why the "t" distribution?  The difference between two means is normally distributed for large samples.  The t-distribution approximates this normal distribution in large samples.  For small samples, the distribution of differences in the mean is not quite normal.  This discrepancy was noted by an experimental brewer at Guinness (W.S. Gossett).  Since quality control could involve only small samples of ingredients (malt, hops), the statisticians required a test statistic that performed well for small samples.  The t-distribution was widely used after this insight.  Gossett and Pearson (the statistician most closely associated with correlation) worked together for a short time at and published their findings in 1896 (correlation/Pearson), 1900 (chi-square/Pearson) and 1908 (t-distribution/Gossett).  For details see @porter1986 or @ziliak2008. 
 
 Later work – attributed to Fisher – resulted in the rule-of-thumb: if a t test value is larger than +2 or smaller than -2, the observed difference in means is statistically significant (more on this below!).
 
-## An application: Feelings toward the National Rifle Association
+## An application: feelings toward the National Rifle Association
 
-The ANES includes a number of variables that are all feeling thermometers.  A “0” indicates that you do not like the group, person or symbol that the thermometer refers to.  A “100” indicates you very much like that group, symbol or person.
+The 2024 ANES includes a number of variables that are all feeling thermometers.  A “0” indicates that you do not like the group, person or symbol that the thermometer refers to.  A “100” indicates you very much like that group, symbol or person.
 
-There is a feeling thermomemter for the NRA.  Other group thermometers include the CDC, unions, the military, and big business.  Figure 4.3 summarizes the distribution of the NRA thermometer.  You can see that most people are neutral, but there are a substantial number who have negative feelings (0) and a large number with positive feelings (75 and 100). Table 4.3 reports the descriptive statistics for the NRA feeling thermometer for the entire sample.
+There is a feeling thermometer for the NRA.  Other group thermometers include the CDC, unions, the military, and big business.  Figure 4.3 summarizes the distribution of the NRA thermometer.  You can see that most people are neutral, but there are a substantial number who have negative feelings (0) and a large number with positive feelings (75 and 100). Table 4.3 reports the descriptive statistics for the NRA feeling thermometer for the entire sample.
 
-#### Figure 4.3.  Feelings toward the NRA{-}
+**Figure 4.3  Feelings toward the NRA**
 ```{r figure, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
-ggplot(anes2020, aes(x = ft_NRA, y = 100*..density.., weight = weight)) + geom_histogram(binwidth=1)+labs(x="Feeling thermometer, NRA", y="Percentage" )
+ggplot(anes2024, aes(x = ft_NRA, y = 100*..density.., weight = weight)) + geom_histogram(binwidth=1)+labs(x="Feeling thermometer, NRA", y="Percentage" )
 ```
 
-#### Table 4.2.  Descriptive statistics.  NRA feeling thermometer{-}
+**Table 4.2  Descriptive statistics.  NRA feeling thermometer**
 ```{r table2, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
-test<-anes2020 %>% drop_na(ft_NRA, weight)
+test<-anes2024 %>% drop_na(ft_NRA, weight)
 stats<- test %>% 
   summarise(
     N = nrow(test),
@@ -233,9 +221,9 @@ kable(format(stats2, digits=4, drop0trailing=TRUE), align = "cc", col.names=c("D
 
 The 95% confidence interval in this case would be:
 
-$$ 51.36 +/-  (2 * 34.05 / \sqrt{6992}) = 51.36 +/- 0.41 $$
+$$ 47.56 +/-  (2 * 31.27 / \sqrt{2814}) = 47.56 +/- 0.59 $$
 
-You don't have to calculate this by hand - the information will be included in the output you use for the problem sets and papers.  Again, this is precise - we know, with some certainty, that the population average is between 50.95 and 51.77.
+You don't have to calculate this by hand - the information will be included in the output you use for the problem sets and papers.  Again, this is precise - we know, with some certainty, that the population average is between 46.97 and 48.15.
 
 We can replicate this calculation to compare smaller samples – men compared to women, white compared to minority.  Instead of using the mean and standard error of the mean for the entire sample, we look at and compare two groups.  If we can be 95% confident that the group means are different in the population, then we know we can safely make an inference about the population from our sample. 
 
@@ -243,9 +231,9 @@ We can replicate this calculation to compare smaller samples – men compared to
 
 Will men and women have different attitudes toward the NRA?  A lot of media coverage after the 2016 election focused on women’s activism and women’s voting, assuming or expecting that women would overwhelmingly support Democratic candidates, particular presidential nominee Hillary Clinton.  Given that the Democratic party is more likely to advocate stronger restrictions on gun access, maybe women would dislike the NRA?  We can test that expectation with a t-test. The results of this test are summarized in Table 4.3.  
 
-#### Table 4.3. Gender and the NRA feeling thermometer{-}
+**Table 4.3  Gender and the NRA feeling thermometer**
 ```{r gender_NRA, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
-test<-anes2020 %>% drop_na(ft_NRA, female, weight)
+test<-anes2024 %>% drop_na(ft_NRA, female, weight)
 # This is the default output from R - unweighted
 #t.test(test$ft_NRA[test$female==1],test$ft_NRA[test$female==0])
 
@@ -266,11 +254,11 @@ cat("Mean for", group1, "=", mu1, "\n",
     "t-test = ", t, "\n",
     "p = ", p)
 ```
-We only need to look at three numbers to understand this output – the average for men was 53.0 and the average for women was 49.06 – a small difference, but men slightly warmer.  The significance level or p-value associated with this test is 0.000. What does this mean? 
+We only need to look at three numbers to understand this output – the average for men was 49.5 and the average for women was 45.7 – a small difference, but men slightly warmer.  The significance level or p-value associated with this test is 0.000. What does this mean? 
 
-The actual value of the t-test is -4.04 and we use that number to come up with a significance level (also called a p-value).  If there was no relationship between gender and the NRA thermometer (same exact means for men and women), the t-test would be 0.0 and the significance level would be 1.0.  If the significance level is below 0.05, then we can be 95% confident that the groups are different in the population.  In Table 4.1 the significance level (p) is less than 0.05, something less than 0.0001.) 
+The actual value of the t-test is -3.05 and we use that number to come up with a significance level (also called a p-value).  If there was no relationship between gender and the NRA thermometer (same exact means for men and women), the t-test would be 0.0 and the significance level would be 1.0.  If the significance level is below 0.05, then we can be 95% confident that the groups are different in the population.  In Table 4.1 the significance level (p) is less than 0.05, something less than 0.001.) 
 
-All statistics we use will be accompanied by a measure of significance – often denoted as “p” or the probability value.  For our purposes, “p” is the probability that a test statistic of some value could be observed in a sample drawn from a population where the actual or true value of the test statistic is zero.   There is a 0.00% probability that we could observe a t-test of -4.043 in the ANES even if men and women had identical average NRA responses in the population
+All statistics we use will be accompanied by a measure of significance – often denoted as “p” or the probability value.  For our purposes, “p” is the probability that a test statistic of some value could be observed in a sample drawn from a population where the actual or true value of the test statistic is zero.   There is a 0.00% probability that we could observe a t-test of -3.054 in the ANES if men and women had identical average NRA responses in the population
 
 >Note: this is very specific type of inference – we can learn something about the population from our small sample.  If p < .05 then the observed difference between the two groups is statistically significant -- this an arbitrary standard but a convention in social science.  We will discuss this in a more systematic in the chapter on chi-square, but, for now, just remember the convention – p must be less than 0.05
 
@@ -280,11 +268,11 @@ Remember that we always report/discuss three things with a measure of associatio
 
 ### Race and feelings toward the NRA{-}
 
-Will white and minority respondents have different attitudes toward the NRA?  The NRA is closely tied to the Repubican Party, so might expect that this would translate into very different attitudes toward the NRA between whites and minorities.  Results of a t-test are reproduced as Table 4.4.
+Will white and minority respondents have different attitudes toward the NRA?  The NRA is closely tied to the Republican Party, so might expect that this would translate into very different attitudes toward the NRA between whites and minorities.  Results of a t-test are reproduced as Table 4.4.
 
-#### Table 4.4. Race and the NRA {-}
+**Table 4.4 Race and the NRA**
 ```{r race_NRA, echo=FALSE, warning=FALSE, message=FALSE, comment=""}
-test<-anes2020 %>% drop_na(ft_NRA, minority, weight)
+test<-anes2024 %>% drop_na(ft_NRA, minority, weight)
 # This is the default output from R - unweighted
 #t.test(test$ft_NRA[test$minority==1],test$ft_NRA[test$minority==0])
 
@@ -305,7 +293,13 @@ cat("Mean for", group1, "=", mu1, "\n",
     "t-test = ", t, "\n",
     "p = ", p)
 ```
-Again, three pieces of information tell the story.  Race is a categorical or nominal variable with a couple of categories:  1. White, 2. Black, 3. Asian, 4. Native American, 5. Hispanic, 6. Other.  The t-test permits us to compare White respondents (<2 on the scale) with all minorities (>=2).   The average for white respondents was 54.64, but the average for minority respondents was 44.01 – much lower.  The significance level in this case was again 0.000, much lower than 0.05.  We can be confident that, in the larger population, white respondents have more favorable views of the NRA. Since the difference in means between White and Minority respondents is much larger than the difference between women and men, we know that race is a better predictor for understanding how someone feels about the NRA.
+Again, three pieces of information tell the story.  Race is a categorical or nominal variable with a couple of categories:  1. White, 2. Black, 3. Asian, 4. Native American, 5. Hispanic, 6. Other.  The t-test permits us to compare White respondents (<2 on the scale) with all minorities (>=2).   The average for white respondents was 50.9, but the average for minority respondents was 41.3 – much lower.  The significance level in this case was again 0.000, much lower than 0.05.  We can be confident that, in the larger population, white respondents have more favorable views of the NRA. Since the difference in means between White and Minority respondents is much larger than the difference between women and men, we know that race is a better predictor for understanding how someone feels about the NRA.
+
+## The t-test and Kalamazoo: a local connection
+
+Student (Gossett) used several datasets from published work to demonstrate the usefulness of the t-test. One set of data was collected by a team of physicians at the Kalamazoo Psychiatric Hospital, comparing the effects of three different chemical compounds on patient sleep (published by A. R. Cushny and A. R. Peebles in the *Journal of Physiology* in 1906).  Analyzing the data, Student demonstrated that small improved sleep times associated with one compound could just be due to chance, but larger improved sleep times associated with two of the other formulations indicated the treatments were effective.  The research practices associated with the data collection and 1906 publication violate a number of standards that we regard as routine today - the original work was funded by the drug manufacturer (Merck), the patients did not consent to participating in the study, and there were no blinds - doctors knew who got which drugs.  But the example has persisted in the statistical literature for 100 years.  For details see @stigler2019.
+
+<!-- Also used https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2008.00279.x -->
 
 ## Conclusion
 
